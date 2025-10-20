@@ -1,0 +1,195 @@
+<?php
+// Main view file for the dashboard. Includes header, login/search forms, map, and facility table.
+global $view;
+require('template/header.phtml');
+?>
+
+<div class="dashboard d-flex flex-wrap mt-4">
+
+    <!-- LEFT PANEL: Login + Search -->
+    <div class="dashboard-left">
+
+        <!-- Login Box -->
+        <div class="dashboard-box mb-4">
+            <h3>Login</h3>
+
+            <?php if (!isset($_SESSION['loggedin']) || !$_SESSION['loggedin']): ?>
+                <!-- Login form if user is not logged in -->
+                <form method="post" action="index.php" class="form">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" name="username" id="username" class="form-control" required placeholder="Username">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" class="form-control" required placeholder="Password">
+                    </div>
+                    <button type="submit" name="loginbutton" class="btn btn-primary">Login</button>
+                </form>
+            <?php else: ?>
+                <!-- Greeting + Logout -->
+                <h4>Welcome, <?= htmlspecialchars($_SESSION['username']); ?>!</h4>
+                <form method="post" action="index.php">
+                    <button type="submit" name="logoutbutton" class="btn btn-danger">Logout</button>
+                </form>
+            <?php endif; ?>
+        </div>
+
+        <!-- Search Facilities -->
+        <div class="dashboard-box">
+            <h3>Search Facilities</h3>
+            <form method="get" action="index.php" class="form-inline mb-2">
+                <div class="form-group d-flex flex-wrap gap-2 w-100">
+                    <!-- Live Search Input -->
+                    <input type="text" id="liveSearchInput" name="search" class="form-control flex-grow-1"
+                           placeholder="Search facilities..."
+                           value="<?= htmlspecialchars($view->searchQuery); ?>"
+                           oninput="liveSearchFacilities(this.value)">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+
+                <!-- Sorting Dropdown -->
+                <div class="form-group mt-2 w-100">
+                    <label for="sort">Sort By:</label>
+                    <select name="sort" id="sort" class="form-control mt-1">
+                        <option value="">Default</option>
+                        <option value="title_az" <?= $view->sortOrder == 'title_az' ? 'selected' : '' ?>>Title (A-Z)</option>
+                        <option value="title_za" <?= $view->sortOrder == 'title_za' ? 'selected' : '' ?>>Title (Z-A)</option>
+                        <option value="category_az" <?= $view->sortOrder == 'category_az' ? 'selected' : '' ?>>Category (1-15)</option>
+                        <option value="category_za" <?= $view->sortOrder == 'category_za' ? 'selected' : '' ?>>Category (15-1)</option>
+                        <option value="newest" <?= $view->sortOrder == 'newest' ? 'selected' : '' ?>>Newest Added</option>
+                        <option value="oldest" <?= $view->sortOrder == 'oldest' ? 'selected' : '' ?>>Oldest Added</option>
+
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL: Leaflet Map -->
+    <div class="dashboard-right">
+        <div id="mapContainer">
+            <div id="map" style="height: 500px; width: 100%; border: 1px solid #ddd; border-radius: 8px;"></div>
+        </div>
+    </div>
+
+    <!-- Leaflet Scripts -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- Global Variables for JS -->
+    <script>
+        const csrfToken = '<?= $_SESSION["csrf_token"]; ?>';
+        const isManager = <?= isset($view->isManager) && $view->isManager ? 'true' : 'false'; ?>;
+    </script>
+
+    <!-- Custom JS -->
+    <script src="js/map.js"></script>
+
+    <!-- Initialise the map -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            window.ecoMap = new EcoMap('map', 'getFacilities.php');
+        });
+    </script>
+
+    <!-- FACILITY TABLE -->
+    <div class="table-container">
+        <h2>Facilities</h2>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <?php if (isset($view->isManager) && $view->isManager): ?>
+                        <th>Actions</th>
+                    <?php endif; ?>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>House Number</th>
+                    <th>Street Name</th>
+                    <th>County</th>
+                    <th>Town</th>
+                    <th>Postcode</th>
+                    <th>Longitude</th>
+                    <th>Latitude</th>
+                    <th>Contributor</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php if (!empty($view->facilities)): ?>
+                    <?php foreach ($view->facilities as $facility): ?>
+                        <tr>
+                            <?php if (isset($view->isManager) && $view->isManager): ?>
+                                <td>
+                                    <a href="editFacilities.php?id=<?= htmlspecialchars($facility->getId()); ?>" class="btn btn-warning btn-sm mb-1">Edit</a>
+                                    <a href="deleteFacility.php?id=<?= htmlspecialchars($facility->getId()); ?>" class="btn btn-danger btn-sm">Delete</a>
+                                </td>
+                            <?php endif; ?>
+                            <td><?= htmlspecialchars($facility->getId()); ?></td>
+                            <td><?= htmlspecialchars($facility->getTitle()); ?></td>
+                            <td><?= htmlspecialchars($facility->getCategory()); ?></td>
+                            <td><?= htmlspecialchars($facility->getDescription()); ?></td>
+                            <td><?= htmlspecialchars($facility->getHouseNumber()); ?></td>
+                            <td><?= htmlspecialchars($facility->getStreetName()); ?></td>
+                            <td><?= htmlspecialchars($facility->getCounty()); ?></td>
+                            <td><?= htmlspecialchars($facility->getTown()); ?></td>
+                            <td><?= htmlspecialchars($facility->getPostcode()); ?></td>
+                            <td><?= htmlspecialchars($facility->getLng()); ?></td>
+                            <td><?= htmlspecialchars($facility->getLat()); ?></td>
+                            <td><?= htmlspecialchars($facility->getContributor()); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="<?= isset($view->isManager) && $view->isManager ? 14 : 13; ?>">No facilities found.</td>
+                    </tr>
+                <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <?php if ($view->totalPages > 1): ?>
+            <nav>
+                <ul class="pagination justify-content-center mt-4">
+                    <li class="page-item <?= $view->currentPage <= 1 ? 'disabled' : '' ?>">
+                        <a class="page-link ajax-page-link" href="?search=<?= htmlspecialchars($view->searchQuery) ?>&sort=<?= htmlspecialchars($view->sortOrder) ?>&page=<?= $view->currentPage - 1 ?>">Previous</a>
+                    </li>
+
+                    <?php for ($i = 1; $i <= $view->totalPages; $i++): ?>
+                        <li class="page-item <?= $i == $view->currentPage ? 'active' : '' ?>">
+                            <a class="page-link ajax-page-link" href="?search=<?= htmlspecialchars($view->searchQuery) ?>&sort=<?= htmlspecialchars($view->sortOrder) ?>&page=<?= $i ?>"><?= $i ?></a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <li class="page-item <?= $view->currentPage >= $view->totalPages ? 'disabled' : '' ?>">
+                        <a class="page-link ajax-page-link" href="?search=<?= htmlspecialchars($view->searchQuery) ?>&sort=<?= htmlspecialchars($view->sortOrder) ?>&page=<?= $view->currentPage + 1 ?>">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        <?php endif; ?>
+    </div>
+</div>
+
+<!-- Scroll to Top Button -->
+<button onclick="scrollToTop()" id="scrollTopBtn" class="btn"
+        style="display: none; position: fixed; bottom: 40px; right: 30px; z-index: 99;">
+    ↑
+</button>
+
+<!-- Scroll Button Script -->
+<script>
+    window.onscroll = function () {
+        const btn = document.getElementById("scrollTopBtn");
+        btn.style.display = (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100)
+            ? "block" : "none";
+    };
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
+
+<?php require('template/footer.phtml'); ?>

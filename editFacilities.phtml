@@ -1,0 +1,132 @@
+<?php require('template/header.phtml'); ?>
+
+<div class="container mt-5">
+    <h2>Edit Facility</h2>
+
+    <!-- Show the success message if one exists -->
+    <?php if (!empty($view->message)): ?>
+        <div class="alert alert-success"><?= htmlspecialchars($view->message); ?></div>
+    <?php endif; ?>
+
+    <!-- Show the error message if there's one -->
+    <?php if (!empty($view->errorMessage)): ?>
+        <div class="alert alert-danger"><?= htmlspecialchars($view->errorMessage); ?></div>
+    <?php endif; ?>
+
+    <form method="post" action="">
+        <!-- CSRF protection token -->
+        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+
+        <!-- Facility Title -->
+        <div class="mb-3">
+            <label for="facilityTitle" class="form-label">Facility Title</label>
+            <input type="text" name="facilityTitle" id="facilityTitle" class="form-control"
+                   placeholder="Enter Facility Title"
+                   value="<?= htmlspecialchars($view->facility['title']); ?>" required>
+        </div>
+
+        <!-- Facility Category Dropdown -->
+        <div class="mb-3">
+            <label for="facilityCategory" class="form-label">Facility Category</label>
+            <select name="facilityCategory" id="facilityCategory" class="form-control" required>
+                <option value="">-- Select Category --</option>
+                <?php
+                $categories = [
+                    1 => 'Recycling Bins',
+                    2 => 'e-Scooters',
+                    3 => 'Bike Share Stations',
+                    4 => 'Public EV Charging Stations',
+                    5 => 'Battery Recycling Points',
+                    6 => 'Community Compost Bins',
+                    7 => 'Solar-Powered Benches',
+                    8 => 'Green Roofs',
+                    9 => 'Public Water Refill Stations',
+                    10 => 'Waste Oil Collection Points',
+                    11 => 'Book Swap Stations',
+                    12 => 'Pollinator Gardens',
+                    13 => 'E-Waste Collection Bins',
+                    14 => 'Clothing Donation Bins',
+                    15 => 'Community Tool Libraries'
+                ];
+
+                foreach ($categories as $id => $name) {
+                    $selected = $view->facility['category'] == $id ? 'selected' : '';
+                    echo "<option value=\"$id\" $selected>$name</option>";
+                }
+                ?>
+            </select>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+            <label for="facilityDescription" class="form-label">Facility Description</label>
+            <textarea name="facilityDescription" id="facilityDescription" class="form-control"
+                      placeholder="Enter Facility Description" rows="5" required><?= htmlspecialchars($view->facility['description']); ?></textarea>
+        </div>
+
+        <!-- House Number -->
+        <div class="mb-3">
+            <label for="facilityHouseNumber" class="form-label">Facility House Number</label>
+            <input type="text" name="facilityHouseNumber" id="facilityHouseNumber" class="form-control"
+                   placeholder="Enter Facility House Number"
+                   pattern="^[0-9]+[a-zA-Z0-9\s\-\/]*$"
+                   value="<?= htmlspecialchars($view->facility['houseNumber']); ?>" required>
+        </div>
+
+        <!-- Street Name -->
+        <div class="mb-3">
+            <label for="facilityStreetName" class="form-label">Facility Street Name</label>
+            <input type="text" name="facilityStreetName" id="facilityStreetName" class="form-control"
+                   placeholder="Enter Facility Street Name"
+                   value="<?= htmlspecialchars($view->facility['streetName']); ?>" required>
+        </div>
+
+        <!-- County -->
+        <div class="mb-3">
+            <label for="facilityCounty" class="form-label">Facility County</label>
+            <input type="text" name="facilityCounty" id="facilityCounty" class="form-control"
+                   placeholder="Enter Facility County"
+                   value="<?= htmlspecialchars($view->facility['county']); ?>" required>
+        </div>
+
+        <!-- Town -->
+        <div class="mb-3">
+            <label for="facilityTown" class="form-label">Facility Town</label>
+            <input type="text" name="facilityTown" id="facilityTown" class="form-control"
+                   placeholder="Enter Facility Town"
+                   value="<?= htmlspecialchars($view->facility['town']); ?>" required>
+        </div>
+
+        <!-- Postcode -->
+        <div class="mb-3">
+            <label for="facilityPostcode" class="form-label">Facility Postcode</label>
+            <input type="text" name="facilityPostcode" id="facilityPostcode" class="form-control"
+                   placeholder="Enter Facility Postcode"
+                   value="<?= htmlspecialchars($view->facility['postcode']); ?>" required>
+        </div>
+
+        <!-- Longitude -->
+        <div class="mb-3">
+            <label for="facilityLng" class="form-label">Facility Longitude</label>
+            <input type="number" name="facilityLng" id="facilityLng" class="form-control"
+                   placeholder="Enter Facility Longitude"
+                   value="<?= htmlspecialchars($view->facility['lng'] ?? ''); ?>"
+                   step="any" required>
+        </div>
+
+        <!-- Latitude -->
+        <div class="mb-3">
+            <label for="facilityLat" class="form-label">Facility Latitude</label>
+            <input type="number" name="facilityLat" id="facilityLat" class="form-control"
+                   placeholder="Enter Facility Latitude"
+                   value="<?= htmlspecialchars($view->facility['lat'] ?? ''); ?>"
+                   step="any" required>
+        </div>
+
+        <!-- Submit and Back Buttons -->
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="index.php" class="btn btn-secondary">Back to Home</a>
+    </form>
+</div>
+
+<?php require('template/footer.phtml'); ?>

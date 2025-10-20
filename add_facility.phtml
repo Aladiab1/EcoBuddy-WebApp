@@ -1,0 +1,121 @@
+<?php require('template/header.phtml'); ?>
+
+<div class="container mt-5">
+    <h2>Add Facility</h2>
+
+    <!-- Displays the success or error messages -->
+    <?php if (!empty($view->message)): ?>
+        <!-- Success message -->
+        <div class="alert alert-success">
+            <?= htmlspecialchars($view->message); ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($view->errorMessage)): ?>
+        <!-- Error message -->
+        <div class="alert alert-danger">
+            <?= htmlspecialchars($view->errorMessage); ?>
+        </div>
+    <?php endif; ?>
+
+    <form method="post" action="add_facility.php" class="needs-validation">
+        <!-- Facility ID input -->
+        <div class="mb-3">
+            <label for="facilityId" class="form-label">Facility ID</label>
+            <input type="text" name="facilityId" class="form-control" id="facilityId"
+                   placeholder="Enter Facility ID" required>
+        </div>
+
+        <!-- Facility Title input -->
+        <div class="mb-3">
+            <label for="facilityTitle" class="form-label">Facility Title</label>
+            <input type="text" name="facilityTitle" class="form-control" id="facilityTitle"
+                   placeholder="Enter Facility Title" required>
+        </div>
+
+        <!-- Facility Category input -->
+        <div class="mb-3">
+            <label for="facilityCategory" class="form-label">Facility Category</label>
+            <select name="facilityCategory" id="facilityCategory" class="form-control" required>
+                <option value="">-- Select Category --</option>
+                <option value="1">Recycling Bins</option>
+                <option value="2">e-Scooters</option>
+                <option value="3">Bike Share Stations</option>
+                <option value="4">Public EV Charging Stations</option>
+                <option value="5">Battery Recycling Points</option>
+                <option value="6">Community Compost Bins</option>
+                <option value="7">Solar-Powered Benches</option>
+                <option value="8">Green Roofs</option>
+                <option value="9">Public Water Refill Stations</option>
+                <option value="10">Waste Oil Collection Points</option>
+                <option value="11">Book Swap Stations</option>
+                <option value="12">Pollinator Gardens</option>
+                <option value="13">E-Waste Collection Bins</option>
+                <option value="14">Clothing Donation Bins</option>
+                <option value="15">Community Tool Libraries</option>
+            </select>
+        </div>
+
+        <!-- Facility Description input -->
+        <div class="mb-3">
+            <label for="facilityDescription" class="form-label">Facility Description</label>
+            <textarea class="form-control" name="facilityDescription" id="facilityDescription"
+                      placeholder="Enter Facility Description" rows="5" required></textarea>
+        </div>
+
+        <!-- Facility Address inputs -->
+        <div class="mb-3">
+            <label for="facilityHouseNumber" class="form-label">Facility House Number</label>
+            <input type="text" name="facilityHouseNumber" class="form-control" id="facilityHouseNumber"
+                   placeholder="Enter Facility House Number" pattern="^[0-9]+[a-zA-Z0-9\s\-\/]*$" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="facilityStreetName" class="form-label">Facility Street Name</label>
+            <input type="text" name="facilityStreetName" class="form-control" id="facilityStreetName"
+                   placeholder="Enter Facility Street Name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="facilityCounty" class="form-label">Facility County</label>
+            <input type="text" name="facilityCounty" class="form-control" id="facilityCounty"
+                   placeholder="Enter Facility County" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="facilityTown" class="form-label">Facility Town</label>
+            <input type="text" name="facilityTown" class="form-control" id="facilityTown"
+                   placeholder="Enter Facility Town" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="facilityPostcode" class="form-label">Facility Postcode</label>
+            <input type="text" name="facilityPostcode" class="form-control" id="facilityPostcode"
+                   placeholder="Enter Facility Postcode" required>
+        </div>
+
+        <!-- Facility Coordinates inputs -->
+        <div class="mb-3">
+            <label for="facilityLng" class="form-label">Facility Longitude</label>
+            <input type="number" name="facilityLng" class="form-control" id="facilityLng"
+                   placeholder="Enter Facility Longitude" step="any" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="facilityLat" class="form-label">Facility Latitude</label>
+            <input type="number" name="facilityLat" class="form-control" id="facilityLat"
+                   placeholder="Enter Facility Latitude" step="any" required>
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary">Add Facility</button>
+        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token']; ?>">
+    </form>
+</div>
+
+<?php require('template/footer.phtml'); ?>
+
+
+
+
+
